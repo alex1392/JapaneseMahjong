@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30104.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JapaneseMahjong", ".\JapaneseMahjong\JapaneseMahjong.csproj", "{405C9CC8-0C7E-4C30-8616-726F42B18337}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JapaneseMahjongTests", ".\JapaneseMahjongTests\JapaneseMahjongTests.csproj", "{B7087697-AFE6-4B73-A2D7-BBC0026B8C4D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{405C9CC8-0C7E-4C30-8616-726F42B18337}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{405C9CC8-0C7E-4C30-8616-726F42B18337}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{405C9CC8-0C7E-4C30-8616-726F42B18337}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{405C9CC8-0C7E-4C30-8616-726F42B18337}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7087697-AFE6-4B73-A2D7-BBC0026B8C4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7087697-AFE6-4B73-A2D7-BBC0026B8C4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7087697-AFE6-4B73-A2D7-BBC0026B8C4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7087697-AFE6-4B73-A2D7-BBC0026B8C4D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {10867F8E-2EDC-42BC-928D-BDE44F4C5A0E}
+	EndGlobalSection
+EndGlobal
