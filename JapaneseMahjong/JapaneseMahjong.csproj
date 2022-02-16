@@ -8,4 +8,53 @@
     <RootNamespace>JapaneseMahjong</RootNamespace>
   </PropertyGroup>
 
+
+  <ItemGroup>
+    <PackageReference Include="PropertyChanged.Fody" Version="3.4.0" />
+    <PackageReference Include="SharpVectors" Version="1.7.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Back.png" />
+    <Resource Include="Resources\Base.png" />
+    <Resource Include="Resources\Honor1.png" />
+    <Resource Include="Resources\Honor2.png" />
+    <Resource Include="Resources\Honor3.png" />
+    <Resource Include="Resources\Honor4.png" />
+    <Resource Include="Resources\Honor5.png" />
+    <Resource Include="Resources\Honor6.png" />
+    <Resource Include="Resources\Honor7.png" />
+    <Resource Include="Resources\Man1.png" />
+    <Resource Include="Resources\Man2.png" />
+    <Resource Include="Resources\Man3.png" />
+    <Resource Include="Resources\Man4.png" />
+    <Resource Include="Resources\Man5-Red.png" />
+    <Resource Include="Resources\Man5.png" />
+    <Resource Include="Resources\Man6.png" />
+    <Resource Include="Resources\Man7.png" />
+    <Resource Include="Resources\Man8.png" />
+    <Resource Include="Resources\Man9.png" />
+    <Resource Include="Resources\Pin1.png" />
+    <Resource Include="Resources\Pin2.png" />
+    <Resource Include="Resources\Pin3.png" />
+    <Resource Include="Resources\Pin4.png" />
+    <Resource Include="Resources\Pin5-Red.png" />
+    <Resource Include="Resources\Pin5.png" />
+    <Resource Include="Resources\Pin6.png" />
+    <Resource Include="Resources\Pin7.png" />
+    <Resource Include="Resources\Pin8.png" />
+    <Resource Include="Resources\Pin9.png" />
+    <Resource Include="Resources\Sou1.png" />
+    <Resource Include="Resources\Sou2.png" />
+    <Resource Include="Resources\Sou3.png" />
+    <Resource Include="Resources\Sou4.png" />
+    <Resource Include="Resources\Sou5-Red.png" />
+    <Resource Include="Resources\Sou5.png" />
+    <Resource Include="Resources\Sou6.png" />
+    <Resource Include="Resources\Sou7.png" />
+    <Resource Include="Resources\Sou8.png" />
+    <Resource Include="Resources\Sou9.png" />
+    <Resource Include="Resources\Unknown.png" />
+  </ItemGroup>
+
 </Project>

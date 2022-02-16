@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="JapaneseMahjong.Controls.TileSet"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:controls="clr-namespace:JapaneseMahjong.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+	<WrapPanel VerticalAlignment="Top">
+		<WrapPanel.Resources>
+			<Style TargetType="controls:Tile">
+				<Setter Property="Width" Value="80" />
+				<Setter Property="Margin" Value="5" />
+			</Style>
+		</WrapPanel.Resources>
+		<controls:Tile Type="Man" Value="1" IsRed="False" />
+		<controls:Tile Type="Man" Value="2" IsRed="False" />
+		<controls:Tile Type="Man" Value="3" IsRed="False" />
+		<controls:Tile Type="Man" Value="4" IsRed="False" />
+		<controls:Tile Type="Man" Value="5" IsRed="False" />
+		<controls:Tile Type="Man" Value="5" IsRed="True" />
+		<controls:Tile Type="Man" Value="6" IsRed="False" />
+		<controls:Tile Type="Man" Value="7" IsRed="False" />
+		<controls:Tile Type="Man" Value="8" IsRed="False" />
+		<controls:Tile Type="Man" Value="9" IsRed="False" />
+		<controls:Tile Type="Pin" Value="1" IsRed="False" />
+		<controls:Tile Type="Pin" Value="2" IsRed="False" />
+		<controls:Tile Type="Pin" Value="3" IsRed="False" />
+		<controls:Tile Type="Pin" Value="4" IsRed="False" />
+		<controls:Tile Type="Pin" Value="5" IsRed="False" />
+		<controls:Tile Type="Pin" Value="5" IsRed="True" />
+		<controls:Tile Type="Pin" Value="6" IsRed="False" />
+		<controls:Tile Type="Pin" Value="7" IsRed="False" />
+		<controls:Tile Type="Pin" Value="8" IsRed="False" />
+		<controls:Tile Type="Pin" Value="9" IsRed="False" />
+		<controls:Tile Type="Sou" Value="1" IsRed="False" />
+		<controls:Tile Type="Sou" Value="2" IsRed="False" />
+		<controls:Tile Type="Sou" Value="3" IsRed="False" />
+		<controls:Tile Type="Sou" Value="4" IsRed="False" />
+		<controls:Tile Type="Sou" Value="5" IsRed="False" />
+		<controls:Tile Type="Sou" Value="5" IsRed="True" />
+		<controls:Tile Type="Sou" Value="6" IsRed="False" />
+		<controls:Tile Type="Sou" Value="7" IsRed="False" />
+		<controls:Tile Type="Sou" Value="8" IsRed="False" />
+		<controls:Tile Type="Sou" Value="9" IsRed="False" />
+		<controls:Tile Type="Honor" Value="1" IsRed="False" />
+		<controls:Tile Type="Honor" Value="2" IsRed="False" />
+		<controls:Tile Type="Honor" Value="3" IsRed="False" />
+		<controls:Tile Type="Honor" Value="4" IsRed="False" />
+		<controls:Tile Type="Honor" Value="5" IsRed="False" />
+		<controls:Tile Type="Honor" Value="6" IsRed="False" />
+		<controls:Tile Type="Honor" Value="7" IsRed="False" />
+	</WrapPanel>
+</UserControl>
