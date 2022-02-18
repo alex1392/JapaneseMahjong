@@ -6,10 +6,10 @@ using System.Text;
 
 namespace JapaneseMahjong
 {
-	public class OpenGroup 
+	public class OpenGroup
 	{
 		public GroupType Type { get; private set; }
-		public IList<Tile> Tiles { get; } 
+		public IList<Tile> Tiles { get; }
 		/// <summary>
 		/// index = -1 : obtain from the next player
 		/// index = +1/-3 : obtain from the previous player
@@ -29,7 +29,7 @@ namespace JapaneseMahjong
 		public void AddedQuad(Tile tile)
 		{
 			Debug.Assert(Type == GroupType.Triplet);
-			Debug.Assert(tile == Tiles.First());
+			Debug.Assert(tile.SameAs(Tiles.First()));
 			Tiles.Add(tile);
 			Type = GroupType.OpenQuad;
 		}

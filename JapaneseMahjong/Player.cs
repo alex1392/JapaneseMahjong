@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace JapaneseMahjong
 {
 	public class Player
 	{
 		public int ID { get; } // 1-4: ESWN
-		public IList<Tile> Hand { get; private set; }
-		public IList<Tile> River { get; } = new List<Tile>();
+		public ObservableCollection<Tile> Hand { get; private set; } = new ObservableCollection<Tile>();
+		public ObservableCollection<Tile> River { get; } = new ObservableCollection<Tile>();
 		public IList<OpenGroup> OpenGroups { get; } = new List<OpenGroup>();
+		public TaskCompletionSource<Tile> DiscardTile { get; set; }
 
 		public Player(int id)
 		{
-			Debug.Assert(id >= 1 && id <= 4);
+			Debug.Assert(id >= 0 && id <= 3);
 			ID = id;
 		}
 
@@ -29,7 +32,12 @@ namespace JapaneseMahjong
 
 		public void NewHand(IList<Tile> tiles)
 		{
-			Hand = tiles;
+			OpenGroups.Clear();
+			River.Clear();
+			Hand.Clear();
+			foreach (var tile in tiles) {
+				Hand.Add(tile);
+			}
 		}
 
 		public void Draw(Tile tile) // get one tile from the wall
@@ -46,7 +54,7 @@ namespace JapaneseMahjong
 		public void Pon(Player player) // call a tile from another playerd
 		{
 			var tile = player.River.Last();
-			var group = Hand.TakeWhile(t => t == tile).Append(tile);
+			var group = Hand.TakeWhile(t => t.SameAs(tile)).Append(tile);
 			OpenGroups.Add(new OpenGroup(GroupType.Triplet, group, ID - player.ID));
 			while (Hand.Remove(tile)) { }
 		}
@@ -58,6 +66,8 @@ namespace JapaneseMahjong
 			// check if can close Kan
 
 			// check if can add Kan
+
+			// check if tsumo
 
 			return CallType.None;
 		}
@@ -78,21 +88,6 @@ namespace JapaneseMahjong
 			return CallType.None;
 		}
 
-		public void SortHand()
-		{
-			Hand = Hand.OrderBy(t => t.GetOrderCode()).ToList();
-		}
-
-		public async Task<Tile> DiscardAsync()
-		{
-			return await Task.Run(() => 
-			{
-				Console.WriteLine("Enter the index of tile you want to discard.");
-				var input = Console.ReadLine();
-				var index = int.Parse(input);
-				return Hand[index];
-			});
-		}
 	}
 
 	public enum CallType

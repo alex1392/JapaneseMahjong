@@ -3,66 +3,38 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace JapaneseMahjong
 {
-	public class Tile : IEquatable<Tile>
+	public class Tile : DependencyObject
 	{
 		public int Value { get; set; } // only 1-9
-		public TileType Type { get; set; }
+		public Suit Suit { get; set; }
 		public bool IsRed { get; set; } // only for 5m, 5p, 5s
+		public Tile()
+		{
 
-		public Tile(int value, TileType type, bool isRed = false)
+		}
+		public Tile(int value, Suit type, bool isRed = false) : this()
 		{
 			Value = value;
-			Type = type;
+			Suit = type;
 			IsRed = isRed;
 		}
-		public int GetOrderCode()
-		{
-			return 2*(Value + (int)Type) + (IsRed ? 1 : 0);
-		}
+		public int SortCode => 2 * (Value + (int)Suit) + (IsRed ? 1 : 0);
 		public override string ToString()
 		{
-			return (IsRed ? 0 : Value).ToString() + Type.ToString().ToLower()[0];
+			return (IsRed ? 0 : Value).ToString() + Suit.ToString().ToLower()[0];
 		}
 		public Tile Copy()
 		{
-			return new Tile(Value, Type, IsRed);
+			return new Tile(Value, Suit, IsRed);
 		}
 
-		#region Implement IEquatable
-
-		public override bool Equals(object obj)
-		{
-			return Equals(obj as Tile);
-		}
-
-		public bool Equals(Tile other)
-		{
-			return other != null &&
-				   Value == other.Value &&
-				   Type == other.Type;
-		}
-
-		public override int GetHashCode()
-		{
-			return HashCode.Combine(Value, Type);
-		}
-
-		public static bool operator ==(Tile left, Tile right)
-		{
-			return EqualityComparer<Tile>.Default.Equals(left, right);
-		}
-
-		public static bool operator !=(Tile left, Tile right)
-		{
-			return !(left == right);
-		} 
-		#endregion
-
+		public bool SameAs(Tile tile) => Value == tile.Value && Suit == tile.Suit;
 	}
-	public enum TileType
+	public enum Suit
 	{
 		Man = 0,
 		Pin = 10, 

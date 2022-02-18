@@ -5,10 +5,54 @@
 				xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 				xmlns:local="clr-namespace:JapaneseMahjong"
 				xmlns:controls="clr-namespace:JapaneseMahjong.Controls"
+				xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
 				mc:Ignorable="d"
 				Title="MainWindow"
 				Height="450"
 				Width="800"
-				x:Name="mainWindow">
-	
+				x:Name="mainWindow"
+				d:DataContext="{d:DesignInstance Type=local:MainWindow, IsDesignTimeCreatable=True}">
+	<Grid x:Name="mainGrid">
+		<Grid.Resources>
+			<CollectionViewSource x:Key="MainHandViewSourece"
+														Source="{Binding Game.Players[0].Hand}">
+				<CollectionViewSource.SortDescriptions>
+					<scm:SortDescription PropertyName="SortCode" />
+				</CollectionViewSource.SortDescriptions>
+			</CollectionViewSource>
+		</Grid.Resources>
+		<!--<controls:TileSet Margin="0,0,0,65" />-->
+		<ItemsControl Margin="0,0,0,65"
+									ItemsSource="{Binding Game.Players[0].River}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel Orientation="Horizontal"
+										 ItemWidth="50" />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate DataType="{x:Type local:Tile}">
+					<controls:TileControl Tile="{Binding }"
+																Margin="2" />
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+		<ItemsControl x:Name="MainHandItemsControl"
+									Height="60"
+									VerticalAlignment="Bottom"
+									ItemsSource="{Binding Source={StaticResource MainHandViewSourece}}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Orientation="Horizontal" />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate DataType="{x:Type local:Tile}">
+					<controls:TileControl Tile="{Binding }"
+																Margin="2"
+																MouseDoubleClick="Tile_MouseDoubleClick" />
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</Grid>
 </Window>

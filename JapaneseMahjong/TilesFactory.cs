@@ -10,18 +10,18 @@ namespace JapaneseMahjong
 		public static IEnumerable<Tile> GetFullSet()
 		{
 			var tiles = new List<Tile>();
-			var types = Enum.GetValues(typeof(TileType)).Cast<TileType>();
-			foreach (var type in types.Where(t => t != TileType.Honor)) {
+			var suits = Enum.GetValues(typeof(Suit)).Cast<Suit>();
+			foreach (var suit in suits.Where(t => t != Suit.Honor)) {
 				for (var value = 1; value <= 9; value++) {
 					for (var i = 0; i < 3; i++) {
-						tiles.Add(new Tile(value, type));
+						tiles.Add(new Tile(value, suit));
 					}
-					tiles.Add(new Tile(value, type, value == 5));
+					tiles.Add(new Tile(value, suit, value == 5));
 				}
 			}
 			for (var value = 1; value <= 7; value++) {
 				for (var i = 0; i < 4; i++) {
-					tiles.Add(new Tile(value, TileType.Honor));
+					tiles.Add(new Tile(value, Suit.Honor));
 				}
 			}
 			return tiles;

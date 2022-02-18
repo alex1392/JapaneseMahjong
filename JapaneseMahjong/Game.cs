@@ -66,7 +66,8 @@ namespace JapaneseMahjong
 					// draw from the sea
 				}
 				// wait for user to discard a tile
-				var discardTile = await ActivePlayer.DiscardAsync(); 
+				ActivePlayer.DiscardTile = new TaskCompletionSource<Tile>();
+				var discardTile = await ActivePlayer.DiscardTile.Task;
 				ActivePlayer.Discard(discardTile);
 				// check if anyone is able to call
 				foreach (var player in Players) {
@@ -83,10 +84,10 @@ namespace JapaneseMahjong
 				// resolve which action has the highest priority
 
 				// if not call, move to the next player
-				ActiveID++;
+					//ActiveID++;
 				// if called, move to the called player
-				ActiveID = 3;
-				ActivePlayer.Hand.Add(discardTile);
+					//ActiveID = 3;
+					//ActivePlayer.Hand.Add(discardTile);
 			}
 		}
 

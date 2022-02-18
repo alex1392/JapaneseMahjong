@@ -19,21 +19,30 @@ namespace JapaneseMahjong.Controls
 	/// <summary>
 	/// Interaction logic for Tile.xaml
 	/// </summary>
-	public partial class Tile : UserControl, INotifyPropertyChanged
+	public partial class TileControl : UserControl, INotifyPropertyChanged
 	{
-		public Tile()
+		public TileControl()
 		{
 			InitializeComponent();
 			mainGrid.DataContext = this;
 		}
 
+		public TileControl(Tile tile) : this()
+		{
+			Tile = tile;
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public int Value { get; set; } // only 1-9
-		public TileType Type { get; set; }
-		public bool IsRed { get; set; } // only for 5m, 5p, 5s
+		public Tile Tile
+		{
+			get { return (Tile)GetValue(TileProperty); }
+			set { SetValue(TileProperty, value); }
+		}
+		public static readonly DependencyProperty TileProperty =
+			DependencyProperty.Register("Tile", typeof(Tile), typeof(TileControl), new PropertyMetadata(null));
 
-		[DependsOn(nameof(Value), nameof(Type), nameof(IsRed))]
-		public ImageSource ImageSource => new BitmapImage(new Uri($"/Resources/{Type}{Value}{(IsRed ? "-Red" : null)}.png", UriKind.Relative));
+		[DependsOn(nameof(Tile))]
+		public ImageSource ImageSource => new BitmapImage(new Uri($"/Resources/{Tile.Suit}{Tile.Value}{(Tile.IsRed ? "-Red" : null)}.png", UriKind.Relative));
 	}
 }
