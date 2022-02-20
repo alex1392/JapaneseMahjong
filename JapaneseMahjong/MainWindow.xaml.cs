@@ -24,7 +24,7 @@ namespace JapaneseMahjong
 	/// </summary>
 	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
-		public Game Game { get; set; } = new Game();
+		public Game Game { get; private set; } = new Game();
 		public MainWindow()
 		{
 			InitializeComponent();

@@ -34,13 +34,13 @@ namespace JapaneseMahjong
 
 		public void Deal()
 		{
-			var set = TilesFactory.GetFullSet();
+			var set = TileFactory.GetFullSet();
 			var rand = new Random();
-			set = set.OrderBy(t => rand.Next()); // shuffle
-			var p0 = set.Skip(13 * 0).Take(13).ToList();
-			var p1 = set.Skip(13 * 1).Take(13).ToList();
-			var p2 = set.Skip(13 * 2).Take(13).ToList();
-			var p3 = set.Skip(13 * 3).Take(13).ToList();
+			set = set.OrderBy(t => rand.Next()).ToList(); // shuffle
+			var p0 = set.Skip(13 * 0).Take(13);
+			var p1 = set.Skip(13 * 1).Take(13);
+			var p2 = set.Skip(13 * 2).Take(13);
+			var p3 = set.Skip(13 * 3).Take(13);
 			Players[0].NewHand(p0);
 			Players[1].NewHand(p1);
 			Players[2].NewHand(p2);

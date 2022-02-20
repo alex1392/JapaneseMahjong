@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace JapaneseMahjong
 {
-	public class Tile : DependencyObject
+	public class Tile : IEquatable<Tile>
 	{
 		public int Value { get; set; } // only 1-9
 		public Suit Suit { get; set; }
@@ -32,7 +32,40 @@ namespace JapaneseMahjong
 			return new Tile(Value, Suit, IsRed);
 		}
 
-		public bool SameAs(Tile tile) => Value == tile.Value && Suit == tile.Suit;
+		#region Implement IEquatable
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as Tile);
+		}
+
+		public bool Equals(Tile other)
+		{
+			return other != null &&
+				   Value == other.Value &&
+				   Suit == other.Suit &&
+				   IsRed == other.IsRed;
+		}
+
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(Value, Suit, IsRed);
+		}
+
+		public static bool operator ==(Tile left, Tile right)
+		{
+			return EqualityComparer<Tile>.Default.Equals(left, right);
+		}
+
+		public static bool operator !=(Tile left, Tile right)
+		{
+			return !(left == right);
+		} 
+		#endregion
+	}
+
+	public class TileSorter : IComparer<Tile>
+	{
+		public int Compare(Tile x, Tile y) => x.SortCode - y.SortCode;
 	}
 	public enum Suit
 	{

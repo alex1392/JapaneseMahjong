@@ -14,7 +14,7 @@ namespace JapaneseMahjong
 		public int ID { get; } // 1-4: ESWN
 		public ObservableCollection<Tile> Hand { get; private set; } = new ObservableCollection<Tile>();
 		public ObservableCollection<Tile> River { get; } = new ObservableCollection<Tile>();
-		public IList<OpenGroup> OpenGroups { get; } = new List<OpenGroup>();
+		public IList<OpenGroup> Opens { get; } = new List<OpenGroup>();
 		public TaskCompletionSource<Tile> DiscardTile { get; set; }
 
 		public Player(int id)
@@ -26,13 +26,13 @@ namespace JapaneseMahjong
 		public void Reset()
 		{
 			Hand.Clear();
-			OpenGroups.Clear();
+			Opens.Clear();
 			River.Clear();
 		}
 
-		public void NewHand(IList<Tile> tiles)
+		public void NewHand(IEnumerable<Tile> tiles)
 		{
-			OpenGroups.Clear();
+			Opens.Clear();
 			River.Clear();
 			Hand.Clear();
 			foreach (var tile in tiles) {
@@ -54,19 +54,32 @@ namespace JapaneseMahjong
 		public void Pon(Player player) // call a tile from another playerd
 		{
 			var tile = player.River.Last();
-			var group = Hand.TakeWhile(t => t.SameAs(tile)).Append(tile);
-			OpenGroups.Add(new OpenGroup(GroupType.Triplet, group, ID - player.ID));
+			var group = Hand.TakeWhile(t => t == tile).Append(tile);
+			Opens.Add(new OpenGroup(group, ID - player.ID));
 			while (Hand.Remove(tile)) { }
 		}
 
-		public bool IsNeedDraw() => (OpenGroups.Count() * 3) + Hand.Count() < 14;
+		public bool IsNeedDraw() => (Opens.Count() * 3) + Hand.Count() < 14;
 
 		public CallType CheckSelfCall()
 		{
 			// check if can close Kan
-
+			var i = 0;
+			while (i < Hand.Count) {
+				var tile = Hand[i];
+				var count = Hand.Skip(i).TakeWhile(t => t == tile).Count();
+				if (count == 4) {
+					// can close Kan
+				}
+				i += count; 
+			}
 			// check if can add Kan
-
+			foreach (var open in Opens.Where(o => o.Type == GroupType.Triplet)) {
+				var tile = open.Tiles.First();
+				if (Hand.Any(t => t == tile)) {
+					// can add Kan
+				}
+			}
 			// check if tsumo
 
 			return CallType.None;
