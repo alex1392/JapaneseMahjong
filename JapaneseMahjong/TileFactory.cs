@@ -11,7 +11,7 @@ namespace JapaneseMahjong
 		{
 			var tiles = new List<Tile>();
 			var suits = Enum.GetValues(typeof(Suit)).Cast<Suit>();
-			foreach (var suit in suits.Where(t => t != Suit.Honor)) {
+			foreach (var suit in suits.Except(new[] { Suit.Honor, Suit.None })) {
 				for (var value = 1; value <= 9; value++) {
 					for (var i = 0; i < 3; i++) {
 						tiles.Add(new Tile(value, suit));

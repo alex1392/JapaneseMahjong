@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Diagnostics;
 
 namespace JapaneseMahjong.Tests
 {
@@ -26,6 +27,18 @@ namespace JapaneseMahjong.Tests
 		{
 			var groups = TileFactory.GetGroups(groupsString, true);
 			return Yaku.CheckDoubleSequences(groups);
+		}
+
+		[TestCase("2223334445m", ExpectedResult = "23456m")]
+		[TestCase("1112345678999m", ExpectedResult = "123456789m")]
+		public string GetReadyTilesTest(string tileStr)
+		{
+			var hand = TileFactory.GetTiles(tileStr, true);
+			var readyDicts = Yaku.GetReadyTiles(hand);
+			foreach (var (tiles, groups) in readyDicts) {
+				Debug.WriteLine($"Tiles: {tiles.GetString(true)} / Hand: {string.Join(' ', groups.Select(g => g.GetString(true)))}");
+			}
+			return readyDicts.Keys.SelectMany(tiles => tiles).Distinct().OrderBy(t => t.SortCode).GetString(true);
 		}
 	}
 }

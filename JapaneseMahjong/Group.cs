@@ -1,29 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
 namespace JapaneseMahjong
 {
-	public class Group : IEquatable<Group>
+	public struct Group : IEquatable<Group>, IFullGroup
 	{
-		private IEnumerable<Tile> tiles;
-
-		public GroupType Type { get; private set; }
-		public IEnumerable<Tile> Tiles
-		{
-			get => tiles;
-			protected set
-			{
-				tiles = value;
-				SetType();
-			}
-		}
-
-		private void SetType()
-		{
-			Type = Tiles.Distinct().Count() != 1
+		public GroupType Type => Tiles.Distinct().Count() != 1
 				? GroupType.Sequence
 				: ((Tiles.Count()) switch
 				{
@@ -32,7 +16,7 @@ namespace JapaneseMahjong
 					4 => GroupType.Quad,
 					_ => throw new Exception(),
 				});
-		}
+		public IEnumerable<Tile> Tiles { get; }
 
 		// ex: 1m2m3m
 		// ex: 123m
@@ -53,27 +37,21 @@ namespace JapaneseMahjong
 
 		public override string ToString()
 		{
-			return ToString(true);
+			return this.GetString(true);
 		}
-		public string ToString(bool isCompact = false)
-		{
-			if (!isCompact) {
-				return Tiles.GetString();
-			}
-			return string.Join(null, Tiles.Select(t => t.Value.ToString())) + Tiles.First().Suit.ToString().ToLower()[0];
-		}
+		
 
 		#region Implement IEquatable
 
 		public override bool Equals(object obj)
 		{
-			return Equals(obj as Group);
+			return obj is Group && Equals((Group)obj);
 		}
 
 		public bool Equals(Group other)
 		{
 			return other != null &&
-				   Tiles.Except(other.Tiles).Count() == 0; 
+				   Tiles.Except(other.Tiles).Count() == 0;
 		}
 
 		public override int GetHashCode()
@@ -95,29 +73,6 @@ namespace JapaneseMahjong
 			return !(left == right);
 		}
 		#endregion
-	}
-	public class OpenGroup : Group
-	{
-		/// <summary>
-		/// index = -1 : obtain from the next player
-		/// index = +1/-3 : obtain from the previous player
-		/// index = +2/-2 : obtain from the opposite player
-		/// </summary>
-		public int ObtainIndex { get; }
-
-		public OpenGroup(IEnumerable<Tile> tiles, int obtainIndex) : base(tiles)
-		{
-			Debug.Assert(obtainIndex >= -3 && obtainIndex <= 2);
-			Tiles = new List<Tile>(tiles);
-			ObtainIndex = obtainIndex;
-		}
-
-		public void AddedQuad(Tile tile)
-		{
-			Debug.Assert(Type == GroupType.Triplet);
-			Debug.Assert(tile == Tiles.First());
-			Tiles = Tiles.Append(tile);
-		}
 	}
 
 	public enum GroupType

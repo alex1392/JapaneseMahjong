@@ -36,7 +36,8 @@ namespace JapaneseMahjong
 		{
 			var set = TileFactory.GetFullSet();
 			var rand = new Random();
-			set = set.OrderBy(t => rand.Next()).ToList(); // shuffle
+			// shuffle tiles, NEED to put ToList() here, otherwise rand.Next() will be called every time the query executes
+			set = set.OrderBy(t => rand.Next()).ToList();
 			var p0 = set.Skip(13 * 0).Take(13);
 			var p1 = set.Skip(13 * 1).Take(13);
 			var p2 = set.Skip(13 * 2).Take(13);

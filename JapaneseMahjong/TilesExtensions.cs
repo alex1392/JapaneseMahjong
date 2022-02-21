@@ -20,9 +20,17 @@ namespace JapaneseMahjong
 		{
 			groups = groups.OrderBy(g => g.Tiles.First().SortCode);
 			if (!isCompact) {
-				return string.Join(' ', groups.Select(group => group.ToString())); 
+				return string.Join(' ', groups.Select(group => group.GetString())); 
 			}
-			return string.Join(' ', groups.GroupBy(g => g.Tiles.First().Suit).Select(igroup => string.Join(' ', igroup.Select(g => g.ToString(true)))));
+			return string.Join(' ', groups.GroupBy(g => g.Tiles.First().Suit).Select(igroup => string.Join(' ', igroup.Select(g => g.GetString(true)))));
+		}
+
+		public static string GetString(this IGroup group, bool isCompact = false)
+		{
+			if (!isCompact) {
+				return group.Tiles.GetString();
+			}
+			return string.Join(null, group.Tiles.Select(t => t.Value.ToString())) + group.Tiles.First().Suit.ToString().ToLower()[0];
 		}
 	}
 }
