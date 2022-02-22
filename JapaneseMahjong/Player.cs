@@ -1,27 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Data;
 
 namespace JapaneseMahjong
 {
-	public class Player
+	public class Player : INotifyPropertyChanged
 	{
 		public int ID { get; } // 1-4: ESWN
-		public ObservableCollection<Tile> Hand { get; private set; } = new ObservableCollection<Tile>();
+		public IDictionary<IEnumerable<Tile>, IEnumerable<IGroup>> ReadyDict { get; private set; } = new Dictionary<IEnumerable<Tile>, IEnumerable<IGroup>>();
+		public Tile DrawedTile { get; private set; }
+		public ObservableCollection<Tile> Hand { get; } = new ObservableCollection<Tile>();
 		public ObservableCollection<Tile> River { get; } = new ObservableCollection<Tile>();
-		public IList<OpenGroup> Opens { get; } = new List<OpenGroup>();
-		public TaskCompletionSource<Tile> DiscardTile { get; set; }
+		public ObservableCollection<IFullGroup> Opens { get; } = new ObservableCollection<IFullGroup>();
+		public TaskCompletionSource<(Tile,bool)> DiscardTile { get; set; }
+		public TaskCompletionSource<CallType> SelfCall { get; set; }
+		public TaskCompletionSource<Tile> KanTile { get; set; }
+		public IDictionary<CallType, List<Tile>> SelfActions { get; set; }
+		public int Points { get; set; }
 
 		public Player(int id)
 		{
 			Debug.Assert(id >= 0 && id <= 3);
 			ID = id;
 		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		public void Reset()
 		{
@@ -42,13 +49,77 @@ namespace JapaneseMahjong
 
 		public void Draw(Tile tile) // get one tile from the wall
 		{
-			Hand.Add(tile);
+			DrawedTile = tile;
 		}
 
-		public void Discard(Tile tile) // discard one tile to the river
+		public void Discard(Tile tile, bool fromDraw) // discard one tile to the river
 		{
-			Hand.Remove(tile);
+			if (!fromDraw) {
+				if (!Hand.Remove(tile)) {
+					throw new Exception();
+				}
+				Hand.Add(DrawedTile);
+			}
 			River.Add(tile);
+			DrawedTile = default;
+			ReadyDict = Yaku.GetReadyTiles(Hand);
+		}
+
+
+		public bool IsNeedDraw() => (Opens.Count() * 3) + Hand.Count() < 14;
+
+		public bool CheckSelfCall(IEnumerable<Tile> wall)
+		{
+			var actions = new Dictionary<CallType, List<Tile>>
+			{
+				{ CallType.None, null }
+			};
+			// check if can close Kan
+			var dict = new Dictionary<Tile, int>();
+			foreach (var tile in Hand) {
+				if (dict.ContainsKey(tile)) {
+					dict[tile]++;
+				} else {
+					dict.Add(tile, 1);
+				}
+			}
+			foreach (var (tile, count) in dict) {
+				if (count != 4) {
+					continue;
+				}
+				// can close Kan
+				if (actions.ContainsKey(CallType.Kan)) {
+					actions[CallType.Kan].Add(tile);
+				} else {
+					actions.Add(CallType.Kan, new List<Tile> { tile });
+				}
+			}
+			// check if can add Kan
+			foreach (var open in Opens.Where(o => o.Type == GroupType.Triplet)) {
+				var tile = open.Tiles.First();
+				if (!Hand.Any(t => t == tile)) {
+					continue;
+				}
+				// can add Kan
+				if (actions.ContainsKey(CallType.Kan)) {
+					actions[CallType.Kan].Add(tile);
+				} else {
+					actions.Add(CallType.Kan, new List<Tile> { tile });
+				}
+			}
+			// check if tsumo
+			if (ReadyDict.Keys.SelectMany(tiles => tiles).Any(t => t == DrawedTile)) {
+				actions.Add(CallType.Tsumo, null);
+			}
+			// check if can riichi
+			if (Opens.All(g => !(g is OpenGroup)) && 
+				Points >= 1000 && 
+				ReadyDict.Count > 0 && 
+				wall.Count() >= 4) {
+				actions.Add(CallType.Riichi, null);
+			}
+			SelfActions = actions;
+			return true;
 		}
 
 		public void Pon(Player player) // call a tile from another playerd
@@ -56,33 +127,13 @@ namespace JapaneseMahjong
 			var tile = player.River.Last();
 			var group = Hand.TakeWhile(t => t == tile).Append(tile);
 			Opens.Add(new OpenGroup(group, ID - player.ID));
-			while (Hand.Remove(tile)) { }
+			Hand.Remove(tile);
+			Hand.Remove(tile);
+			Hand.Remove(tile);
 		}
-
-		public bool IsNeedDraw() => (Opens.Count() * 3) + Hand.Count() < 14;
-
-		public CallType CheckSelfCall()
+		public void CloseKan(Tile tile)
 		{
-			// check if can close Kan
-			var i = 0;
-			while (i < Hand.Count) {
-				var tile = Hand[i];
-				var count = Hand.Skip(i).TakeWhile(t => t == tile).Count();
-				if (count == 4) {
-					// can close Kan
-				}
-				i += count; 
-			}
-			// check if can add Kan
-			foreach (var open in Opens.Where(o => o.Type == GroupType.Triplet)) {
-				var tile = open.Tiles.First();
-				if (Hand.Any(t => t == tile)) {
-					// can add Kan
-				}
-			}
-			// check if tsumo
-
-			return CallType.None;
+			throw new NotImplementedException();
 		}
 
 		public CallType CheckCall(Player player, Tile tile)
@@ -105,6 +156,6 @@ namespace JapaneseMahjong
 
 	public enum CallType
 	{
-		None, Chi, Pon, Kan, Ron
+		None, Chi, Pon, Kan, Ron, Tsumo, Riichi
 	}
 }

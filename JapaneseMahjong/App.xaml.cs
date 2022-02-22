@@ -18,6 +18,7 @@ namespace JapaneseMahjong
 		{
 			base.OnStartup(e);
 			MainWindow = new MainWindow();
+			//MainWindow = new TestWindow();
 			MainWindow.Show();
 		}
 	}

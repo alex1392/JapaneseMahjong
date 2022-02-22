@@ -34,15 +34,27 @@ namespace JapaneseMahjong.Controls
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
+		public void OnPropertyChanged(string propertyName)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
 		public Tile Tile
 		{
 			get { return (Tile)GetValue(TileProperty); }
 			set { SetValue(TileProperty, value); }
 		}
 		public static readonly DependencyProperty TileProperty =
-			DependencyProperty.Register("Tile", typeof(Tile), typeof(TileControl), new PropertyMetadata(null));
+			DependencyProperty.Register("Tile", typeof(Tile), typeof(TileControl), new PropertyMetadata(default(Tile), OnTileChanged));
 
-		[DependsOn(nameof(Tile))]
-		public ImageSource ImageSource => new BitmapImage(new Uri($"/Resources/{Tile.Suit}{Tile.Value}{(Tile.IsRed ? "-Red" : null)}.png", UriKind.Relative));
+		/// <summary>
+		/// Fody won't inject OnPropertyChanged for dependency properties, so we MUST make our own call.
+		/// </summary>
+		private static void OnTileChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			(d as TileControl).OnPropertyChanged(nameof(ImageSource));
+		}
+
+		public ImageSource ImageSource => Tile != null ? new BitmapImage(new Uri($"/Resources/{Tile.Suit}{Tile.Value}{(Tile.IsRed ? "-Red" : null)}.png", UriKind.Relative)) : null;
 	}
 }

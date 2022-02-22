@@ -1,0 +1,32 @@
+﻿<Window x:Class="JapaneseMahjong.TestWindow"
+				xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+				xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+				xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+				xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+				xmlns:local="clr-namespace:JapaneseMahjong"
+				xmlns:controls="clr-namespace:JapaneseMahjong.Controls"
+				mc:Ignorable="d"
+				Title="TestWindow"
+				Height="450"
+				Width="800">
+	<StackPanel Orientation="Vertical" 
+							x:Name="mainGrid">
+		<controls:TileControl Tile="{Binding Tile}"
+													Height="60"/>
+		<ListView ItemsSource="{Binding Tiles}"
+							Height="60">
+			<ListView.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Orientation="Horizontal" />
+				</ItemsPanelTemplate>
+			</ListView.ItemsPanel>
+			<ListView.ItemTemplate>
+				<DataTemplate DataType="{x:Type local:Tile}">
+					<controls:TileControl Tile="{Binding }"
+																Margin="2"
+																Height="50"/>
+				</DataTemplate>
+			</ListView.ItemTemplate>
+		</ListView>
+	</StackPanel>
+</Window>

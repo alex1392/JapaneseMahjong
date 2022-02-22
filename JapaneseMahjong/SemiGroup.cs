@@ -14,8 +14,6 @@ namespace JapaneseMahjong
 		public IEnumerable<Tile> Tiles { get; }
 		public SemiGroup(IEnumerable<Tile> tiles)
 		{
-			Debug.Assert(tiles.Count() <= 3);
-			Debug.Assert(tiles.Select(t => t.Suit).Distinct().Count() == 1);
 			ReadyTiles = new List<Tile>();
 			Tiles = tiles;
 

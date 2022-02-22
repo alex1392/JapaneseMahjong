@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,8 +15,8 @@ namespace JapaneseMahjong
 		public int ActiveID { get; set; }
 		public Player ActivePlayer => Players[ActiveID];
 		public IList<Player> Players { get; private set; }
-		public Stack<Tile> Wall { get; private set; }
-		public IList<Tile> Sea { get; private set; }
+		public ObservableQueue<Tile> Wall { get; private set; } = new ObservableQueue<Tile>();
+		public ObservableCollection<Tile> Sea { get; private set; } = new ObservableCollection<Tile>();
 		public bool IsOver { get; set; }
 		public Game()
 		{
@@ -38,17 +39,16 @@ namespace JapaneseMahjong
 			var rand = new Random();
 			// shuffle tiles, NEED to put ToList() here, otherwise rand.Next() will be called every time the query executes
 			set = set.OrderBy(t => rand.Next()).ToList();
-			var p0 = set.Skip(13 * 0).Take(13);
-			var p1 = set.Skip(13 * 1).Take(13);
-			var p2 = set.Skip(13 * 2).Take(13);
-			var p3 = set.Skip(13 * 3).Take(13);
-			Players[0].NewHand(p0);
-			Players[1].NewHand(p1);
-			Players[2].NewHand(p2);
-			Players[3].NewHand(p3);
+			for (int i = 0; i < Players.Count; i++) {
+				Players[i].NewHand(set.Skip(13 * i).Take(13));
+			}
 
-			Wall = new Stack<Tile>(set.Skip(13 * 4).Take(70));
-			Sea = set.TakeLast(14).ToList();
+			foreach (var tile in set.Skip(13 * 4).Take(70)) {
+				Wall.Enqueue(tile);
+			}
+			foreach (var item in set.TakeLast(14)) {
+				Sea.Add(item);
+			}
 		}
 
 		public async Task RunAsync()
@@ -56,20 +56,45 @@ namespace JapaneseMahjong
 			Deal();
 			while (!IsOver) {
 				if (ActivePlayer.IsNeedDraw()) {
-					ActivePlayer.Draw(Wall.Pop());
+					ActivePlayer.Draw(Wall.Dequeue());
 				}
 				// check if can self call 
-				while (ActivePlayer.CheckSelfCall() != CallType.None) {
+				while (ActivePlayer.CheckSelfCall(Wall) && !ActivePlayer.SelfActions.Keys.All(call => call == CallType.None)) {
 					// push action list to the user
-
+					ActivePlayer.SelfCall = new TaskCompletionSource<CallType>();
+					var action = await ActivePlayer.SelfCall.Task;
+					if (action == CallType.None) {
+						break;
+					}
 					// if called
-					// make open group
-					// draw from the sea
+					if (action == CallType.Tsumo) {
+						// Active Player wins, game over, next round
+
+						IsOver = true;
+						return;
+					}
+					if (action == CallType.Kan) {
+						Tile tile;
+						if (ActivePlayer.SelfActions[action].Count == 1) {
+							tile = ActivePlayer.SelfActions[action][0];
+						} else if (ActivePlayer.SelfActions[action].Count > 1) {
+							// push tile list to the user
+							ActivePlayer.KanTile = new TaskCompletionSource<Tile>();
+							tile = await ActivePlayer.KanTile.Task;
+						} else {
+							throw new Exception();
+						}
+						// do action with the tile
+						// draw from the sea
+						ActivePlayer.CloseKan(tile);
+					} else if (action == CallType.Riichi) {
+						// 
+					}
 				}
 				// wait for user to discard a tile
-				ActivePlayer.DiscardTile = new TaskCompletionSource<Tile>();
-				var discardTile = await ActivePlayer.DiscardTile.Task;
-				ActivePlayer.Discard(discardTile);
+				ActivePlayer.DiscardTile = new TaskCompletionSource<(Tile,bool)>();
+				var (discardTile,fromDraw) = await ActivePlayer.DiscardTile.Task;
+				ActivePlayer.Discard(discardTile, fromDraw);
 				// check if anyone is able to call
 				foreach (var player in Players) {
 					var callType = player.CheckCall(ActivePlayer, discardTile);
@@ -85,10 +110,10 @@ namespace JapaneseMahjong
 				// resolve which action has the highest priority
 
 				// if not call, move to the next player
-					//ActiveID++;
+				//ActiveID++;
 				// if called, move to the called player
-					//ActiveID = 3;
-					//ActivePlayer.Hand.Add(discardTile);
+				//ActiveID = 3;
+				//ActivePlayer.Hand.Add(discardTile);
 			}
 		}
 

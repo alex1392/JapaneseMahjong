@@ -19,32 +19,38 @@ using System.Windows.Shapes;
 
 namespace JapaneseMahjong
 {
+	[AddINotifyPropertyChangedInterface]
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window, INotifyPropertyChanged
+	public partial class MainWindow : Window
 	{
 		public Game Game { get; private set; } = new Game();
 		public MainWindow()
 		{
 			InitializeComponent();
-			mainGrid.DataContext = this;
 			Loaded += MainWindow_Loaded;
 		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void RaisePropertyChanged(string propertyName) 
-			=> PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
 		private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
 		{
 			await Game.RunAsync();
 		}
 
-		private void Tile_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		private void DiscardTileFromHand(object sender, MouseButtonEventArgs e)
 		{
-			var tileControl = sender as TileControl;
-			Game.Players[0].DiscardTile?.TrySetResult(tileControl.Tile);
+			if (!(sender is TileControl tileControl)) {
+				return;
+			}
+			Game.Players[0].DiscardTile?.TrySetResult((tileControl.Tile, false));
+		}
+
+		private void DiscardTileFromDraw(object sender, MouseButtonEventArgs e)
+		{
+			if (!(sender is TileControl tileControl)) {
+				return;
+			}
+			Game.Players[0].DiscardTile?.TrySetResult((tileControl.Tile, true));
 		}
 	}
 }

@@ -10,49 +10,63 @@
 				Title="MainWindow"
 				Height="450"
 				Width="800"
-				x:Name="mainWindow"
-				d:DataContext="{d:DesignInstance Type=local:MainWindow, IsDesignTimeCreatable=True}">
-	<Grid x:Name="mainGrid">
-		<Grid.Resources>
+				x:Name="mainWindow">
+	<DockPanel DataContext="{Binding ElementName=mainWindow}">
+		<DockPanel.Resources>
 			<CollectionViewSource x:Key="MainHandViewSourece"
 														Source="{Binding Game.Players[0].Hand}">
 				<CollectionViewSource.SortDescriptions>
 					<scm:SortDescription PropertyName="SortCode" />
 				</CollectionViewSource.SortDescriptions>
 			</CollectionViewSource>
-		</Grid.Resources>
+			<DataTemplate x:Key="TileTemplate" 
+										DataType="{x:Type local:Tile}">
+				<controls:TileControl Tile="{Binding }"
+															Margin="2" />
+			</DataTemplate>
+		</DockPanel.Resources>
 		<!--<controls:TileSet Margin="0,0,0,65" />-->
-		<ItemsControl Margin="0,0,0,65"
-									ItemsSource="{Binding Game.Players[0].River}">
+		<StackPanel DockPanel.Dock="Bottom"
+								Orientation="Horizontal">
+			<ItemsControl Height="60"
+										ItemsSource="{Binding Source={StaticResource MainHandViewSourece}}"
+										ItemTemplate="{StaticResource TileTemplate}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Horizontal" />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.Resources>
+					<Style TargetType="controls:TileControl">
+						<EventSetter Event="MouseDoubleClick"
+												 Handler="DiscardTileFromHand" />
+					</Style>
+				</ItemsControl.Resources>
+			</ItemsControl>
+			<controls:TileControl Tile="{Binding Game.Players[0].DrawedTile}"
+														Height="60"
+														Margin="20,0"
+														MouseDoubleClick="DiscardTileFromDraw"/>
+		</StackPanel>
+		
+		<ItemsControl DockPanel.Dock="Bottom" 
+									ItemsSource="{Binding Game.Players[0].River}"
+									ItemTemplate="{StaticResource TileTemplate}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<WrapPanel Orientation="Horizontal"
-										 ItemWidth="50" />
+										 ItemHeight="50" />
 				</ItemsPanelTemplate>
 			</ItemsControl.ItemsPanel>
-			<ItemsControl.ItemTemplate>
-				<DataTemplate DataType="{x:Type local:Tile}">
-					<controls:TileControl Tile="{Binding }"
-																Margin="2" />
-				</DataTemplate>
-			</ItemsControl.ItemTemplate>
 		</ItemsControl>
-		<ItemsControl x:Name="MainHandItemsControl"
-									Height="60"
-									VerticalAlignment="Bottom"
-									ItemsSource="{Binding Source={StaticResource MainHandViewSourece}}">
+		<ItemsControl ItemsSource="{Binding Game.Wall}"
+									ItemTemplate="{StaticResource TileTemplate}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
-					<StackPanel Orientation="Horizontal" />
+					<WrapPanel Orientation="Horizontal"
+										 ItemHeight="50" />
 				</ItemsPanelTemplate>
 			</ItemsControl.ItemsPanel>
-			<ItemsControl.ItemTemplate>
-				<DataTemplate DataType="{x:Type local:Tile}">
-					<controls:TileControl Tile="{Binding }"
-																Margin="2"
-																MouseDoubleClick="Tile_MouseDoubleClick" />
-				</DataTemplate>
-			</ItemsControl.ItemTemplate>
 		</ItemsControl>
-	</Grid>
+	</DockPanel>
 </Window>
