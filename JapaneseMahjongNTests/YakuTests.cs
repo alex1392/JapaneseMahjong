@@ -6,7 +6,7 @@ using System.Text;
 using System.Linq;
 using System.Diagnostics;
 
-namespace JapaneseMahjong.Tests
+namespace JapaneseMahjong.NTests
 {
 	[TestFixture()]
 	public class YakuTests

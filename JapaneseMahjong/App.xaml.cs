@@ -17,6 +17,7 @@ namespace JapaneseMahjong
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
+
 			MainWindow = new MainWindow();
 			//MainWindow = new TestWindow();
 			MainWindow.Show();

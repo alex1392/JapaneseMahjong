@@ -6,7 +6,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Linq;
 
-namespace JapaneseMahjong.Tests
+namespace JapaneseMahjong.NTests
 {
 	[TestFixture()]
 	public class TileFactoryTests

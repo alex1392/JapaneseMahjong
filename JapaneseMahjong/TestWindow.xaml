@@ -4,14 +4,13 @@
 				xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 				xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 				xmlns:local="clr-namespace:JapaneseMahjong"
-				xmlns:controls="clr-namespace:JapaneseMahjong.Controls"
 				mc:Ignorable="d"
 				Title="TestWindow"
 				Height="450"
 				Width="800">
 	<StackPanel Orientation="Vertical" 
 							x:Name="mainGrid">
-		<controls:TileControl Tile="{Binding Tile}"
+		<local:TileControl Tile="{Binding Tile}"
 													Height="60"/>
 		<ListView ItemsSource="{Binding Tiles}"
 							Height="60">
@@ -22,7 +21,7 @@
 			</ListView.ItemsPanel>
 			<ListView.ItemTemplate>
 				<DataTemplate DataType="{x:Type local:Tile}">
-					<controls:TileControl Tile="{Binding }"
+					<local:TileControl Tile="{Binding }"
 																Margin="2"
 																Height="50"/>
 				</DataTemplate>

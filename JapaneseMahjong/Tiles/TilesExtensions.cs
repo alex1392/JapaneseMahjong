@@ -8,6 +8,10 @@ namespace JapaneseMahjong
 {
 	public static class TilesExtensions
 	{
+		public static IEnumerable<Tile> Distinct(this IEnumerable<Tile> tiles) 
+			=> tiles.Distinct(new TileComparer());
+		public static IEnumerable<Tile> Except(this IEnumerable<Tile> tiles, IEnumerable<Tile> others)
+			=> tiles.Except(others, new TileComparer());
 		public static string GetString(this IEnumerable<Tile> tiles, bool isCompact = false)
 		{
 			if (!isCompact) {
@@ -16,7 +20,7 @@ namespace JapaneseMahjong
 			return string.Join(' ', tiles.GroupBy(t => t.Suit).Select(g => string.Join(null, g.Select(t => t.Value.ToString())) + g.Key.ToString().ToLower()[0]));
 		}
 
-		public static string GetString(this IEnumerable<Group> groups, bool isCompact = false)
+		public static string GetString(this IEnumerable<FullGroup> groups, bool isCompact = false)
 		{
 			groups = groups.OrderBy(g => g.Tiles.First().SortCode);
 			if (!isCompact) {

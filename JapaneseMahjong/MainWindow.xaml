@@ -4,7 +4,7 @@
 				xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 				xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 				xmlns:local="clr-namespace:JapaneseMahjong"
-				xmlns:controls="clr-namespace:JapaneseMahjong.Controls"
+				
 				xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
 				mc:Ignorable="d"
 				Title="MainWindow"
@@ -21,11 +21,11 @@
 			</CollectionViewSource>
 			<DataTemplate x:Key="TileTemplate" 
 										DataType="{x:Type local:Tile}">
-				<controls:TileControl Tile="{Binding }"
+				<local:TileControl Tile="{Binding }"
 															Margin="2" />
 			</DataTemplate>
 		</DockPanel.Resources>
-		<!--<controls:TileSet Margin="0,0,0,65" />-->
+		<!--<TileSet Margin="0,0,0,65" />-->
 		<StackPanel DockPanel.Dock="Bottom"
 								Orientation="Horizontal">
 			<ItemsControl Height="60"
@@ -37,13 +37,13 @@
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.Resources>
-					<Style TargetType="controls:TileControl">
+					<Style TargetType="local:TileControl">
 						<EventSetter Event="MouseDoubleClick"
 												 Handler="DiscardTileFromHand" />
 					</Style>
 				</ItemsControl.Resources>
 			</ItemsControl>
-			<controls:TileControl Tile="{Binding Game.Players[0].DrawedTile}"
+			<local:TileControl Tile="{Binding Game.Players[0].DrawedTile}"
 														Height="60"
 														Margin="20,0"
 														MouseDoubleClick="DiscardTileFromDraw"/>

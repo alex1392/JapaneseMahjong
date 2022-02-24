@@ -9,23 +9,24 @@ namespace JapaneseMahjong
 {
 	public class Game
 	{
-		public int FieldID { get; set; } // 1-2: ES
-		public int RoundID { get; set; } // 1-4: ESWN
-		public int StrikeCount { get; set; }
-		public int ActiveID { get; set; }
-		public Player ActivePlayer => Players[ActiveID];
-		public IList<Player> Players { get; private set; }
+		public int FieldID { get; private set; } // 1-2: ES
+		public int RoundID { get; private set; } // 1-4: ESWN
+		public int StrikeCount { get; private set; }
+		public int ActiveID { get; private set; }
+		public PlayerBase ActivePlayer => Players[ActiveID];
+		public IList<PlayerBase> Players { get; private set; }
 		public ObservableQueue<Tile> Wall { get; private set; } = new ObservableQueue<Tile>();
-		public ObservableCollection<Tile> Sea { get; private set; } = new ObservableCollection<Tile>();
+		public ObservableStack<Tile> Sea { get; private set; } = new ObservableStack<Tile>();
 		public bool IsOver { get; set; }
+		public IGameState State { get; private set; }
 		public Game()
 		{
-			Players = new List<Player>
+			Players = new List<PlayerBase>
 			{
-				new Player(0),
-				new Player(1),
-				new Player(2),
-				new Player(3),
+				new HumanPlayer(0),
+				new ComputerPlayer(1),
+				new ComputerPlayer(2),
+				new ComputerPlayer(3),
 			};
 			IsOver = false;
 			FieldID = 1;
@@ -47,58 +48,28 @@ namespace JapaneseMahjong
 				Wall.Enqueue(tile);
 			}
 			foreach (var item in set.TakeLast(14)) {
-				Sea.Add(item);
+				Sea.Push(item);
 			}
 		}
 
 		public async Task RunAsync()
 		{
 			Deal();
-			while (!IsOver) {
-				if (ActivePlayer.IsNeedDraw()) {
-					ActivePlayer.Draw(Wall.Dequeue());
-				}
-				// check if can self call 
-				while (ActivePlayer.CheckSelfCall(Wall) && !ActivePlayer.SelfActions.Keys.All(call => call == CallType.None)) {
-					// push action list to the user
-					ActivePlayer.SelfCall = new TaskCompletionSource<CallType>();
-					var action = await ActivePlayer.SelfCall.Task;
-					if (action == CallType.None) {
-						break;
-					}
-					// if called
-					if (action == CallType.Tsumo) {
-						// Active Player wins, game over, next round
+			while (!(State is EndState)) {
+				var prevState = State;
+				State = await State.UpdateAsync(this);
+				var newState = State;
+			}
 
-						IsOver = true;
-						return;
-					}
-					if (action == CallType.Kan) {
-						Tile tile;
-						if (ActivePlayer.SelfActions[action].Count == 1) {
-							tile = ActivePlayer.SelfActions[action][0];
-						} else if (ActivePlayer.SelfActions[action].Count > 1) {
-							// push tile list to the user
-							ActivePlayer.KanTile = new TaskCompletionSource<Tile>();
-							tile = await ActivePlayer.KanTile.Task;
-						} else {
-							throw new Exception();
-						}
-						// do action with the tile
-						// draw from the sea
-						ActivePlayer.CloseKan(tile);
-					} else if (action == CallType.Riichi) {
-						// 
-					}
-				}
+			while (!IsOver) {
+
+				
 				// wait for user to discard a tile
-				ActivePlayer.DiscardTile = new TaskCompletionSource<(Tile,bool)>();
-				var (discardTile,fromDraw) = await ActivePlayer.DiscardTile.Task;
-				ActivePlayer.Discard(discardTile, fromDraw);
+				var discardTile = await ActivePlayer.DecideDiscardTileAsync();
+				ActivePlayer.Discard(discardTile);
 				// check if anyone is able to call
 				foreach (var player in Players) {
-					var callType = player.CheckCall(ActivePlayer, discardTile);
-					if (callType != CallType.None) {
+					if (player.CheckCall(ActivePlayer, discardTile)) {
 						// push action list to the user
 
 						// wait for the user to decide whether to call

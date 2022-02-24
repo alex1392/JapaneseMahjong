@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace JapaneseMahjong.Tests
+namespace JapaneseMahjong.NTests
 {
 	[TestFixture()]
 	public class TilesExtensionsTests

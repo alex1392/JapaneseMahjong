@@ -13,10 +13,10 @@ namespace JapaneseMahjong
 			var readyDict = new Dictionary<IEnumerable<Tile>, IEnumerable<IGroup>>();
 			var sortedHand = hand.OrderBy(t => t.SortCode);
 
-			Decompose(sortedHand, new List<SemiGroup>(), new List<Group>());
+			Decompose(sortedHand, new List<SemiGroup>(), new List<FullGroup>());
 			return readyDict;
 
-			void Decompose(IEnumerable<Tile> hand, IEnumerable<SemiGroup> readyGroups, IEnumerable<Group> groups)
+			void Decompose(IEnumerable<Tile> hand, IEnumerable<SemiGroup> readyGroups, IEnumerable<FullGroup> groups)
 			{
 				if (hand.Count() == 0) {
 					IEnumerable<Tile> tiles;
@@ -60,7 +60,7 @@ namespace JapaneseMahjong
 
 				// check for three tiles (groups)
 				if (count >= 3) {
-					Decompose(hand.Skip(3), readyGroups, groups.Append(new Group(hand.Take(3))));
+					Decompose(hand.Skip(3), readyGroups, groups.Append(new FullGroup(hand.Take(3))));
 				}
 
 				if (tile0.Suit != Suit.Honor &&
@@ -71,7 +71,7 @@ namespace JapaneseMahjong
 					foreach (var tile in new[] { tile0, tile1, tile2 }) {
 						handList.Remove(tile);
 					}
-					Decompose(handList, readyGroups, groups.Append(new Group(new List<Tile> { tile0, tile1, tile2 })));
+					Decompose(handList, readyGroups, groups.Append(new FullGroup(new List<Tile> { tile0, tile1, tile2 })));
 				}
 
 				void DecomposeReadyGroup(SemiGroup readyGroup)
@@ -93,9 +93,9 @@ namespace JapaneseMahjong
 
 		// exceptions:
 		// 7 pairs, thirteen orphans
-		public static IEnumerable<IEnumerable<Group>> GetValidHands(IEnumerable<Tile> hand)
+		public static IEnumerable<IEnumerable<FullGroup>> GetValidHands(IEnumerable<Tile> hand)
 		{
-			var results = new List<IEnumerable<Group>>();
+			var results = new List<IEnumerable<FullGroup>>();
 			var sortedHand = hand.OrderBy(t => t.SortCode);
 			var i = 0;
 			while (i < sortedHand.Count()) {
@@ -103,14 +103,14 @@ namespace JapaneseMahjong
 				var count = sortedHand.Skip(i).TakeWhile(t => t == tile).Count();
 				// check if can form a pair
 				if (count >= 2) {
-					var list = new List<Group> { new Group(sortedHand.Skip(i).Take(2)) };
+					var list = new List<FullGroup> { new FullGroup(sortedHand.Skip(i).Take(2)) };
 					Decompose(sortedHand.Take(i).Concat(sortedHand.Skip(i+2)), list);
 				}
 				i += count;
 			}
 			return results;
 
-			void Decompose(IEnumerable<Tile> hand, IEnumerable<Group> list)
+			void Decompose(IEnumerable<Tile> hand, IEnumerable<FullGroup> list)
 			{
 				if (hand.Count() == 0) {
 					results.Add(list);
@@ -123,7 +123,7 @@ namespace JapaneseMahjong
 				var tile0 = hand.First();
 				var count = hand.TakeWhile(t => t == hand.First()).Count();
 				if (count >= 3) { // if the tile can form a triplet
-					Decompose(hand.Skip(3), list.Append(new Group(hand.Take(3))));
+					Decompose(hand.Skip(3), list.Append(new FullGroup(hand.Take(3))));
 				}
 
 				// check if it can form a sequence
@@ -137,28 +137,29 @@ namespace JapaneseMahjong
 					tile0.Suit == tile1.Suit && tile0.Suit == tile2.Suit &&
 					// check the other tiles have consequtive values
 					tile0.Value + 1 == tile1.Value && tile0.Value + 2 == tile2.Value) {
-
+					
 					var handList = hand.ToList();
 					var tiles = new[] { tile0, tile1, tile2 };
 					foreach (var tile in tiles) {
-						handList.Remove(tile);
+						handList.Remove(tile); // remove by value
 					}
-					Decompose(handList, list.Append(new Group(tiles)));
+					Decompose(handList, list.Append(new FullGroup(tiles)));
 				}
 			}
 		}
 
-		public static bool CheckAllSimples(IEnumerable<Group> validHand)
+		public static bool CheckAllSimples(IEnumerable<FullGroup> validHand)
 		{
 			return validHand.Select(g => g.Tiles)
 				.Aggregate((aggre, next) => aggre.Concat(next))
 				.All(t => t.Value != 1 && t.Value != 9 && t.Suit != Suit.Honor);
 		}
 
-		public static bool CheckDoubleSequences(IEnumerable<Group> validHand)
+		public static bool CheckDoubleSequences(IEnumerable<FullGroup> validHand)
 		{
 			var sequences = validHand.Where(g => g.Type == GroupType.Sequence);
-			return sequences.Distinct().ToList().Count() < sequences.Count();
+			var distinct = sequences.Distinct();
+			return distinct.Count() < sequences.Count();
 		}
 	}
 }

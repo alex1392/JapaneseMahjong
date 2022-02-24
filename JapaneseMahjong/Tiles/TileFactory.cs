@@ -33,12 +33,16 @@ namespace JapaneseMahjong
 
 			IEnumerable<Tile> ByCompactString(string tileString)
 			{
-				return from str in tileString.Split(' ')
-					   let suitChar = str[^1]
-					   let suit = Enum.GetValues(typeof(Suit)).Cast<Suit>().First(suit => suit.ToString().ToLower()[0] == suitChar)
-					   from ch in str[0..^1]
-					   let tile = new Tile(int.Parse(ch.ToString()), suit)
-					   select tile;
+				var list = new List<Tile>();
+				foreach (var str in tileString.Split(' ')) {
+					var suitChar = str[^1];
+					var suit = Enum.GetValues(typeof(Suit)).Cast<Suit>().First(suit => suit.ToString().ToLower()[0] == suitChar);
+					foreach (var ch in str[0..^1]) {
+						var tile = new Tile(int.Parse(ch.ToString()), suit);
+						list.Add(tile);
+					}
+				}
+				return list;
 			}
 
 			IEnumerable<Tile> ByString(string tileString)
@@ -57,12 +61,12 @@ namespace JapaneseMahjong
 						.Cast<Suit>()
 						.First(suit => suit.ToString().ToLower()[0] == s[1]);
 					return new Tile(value, suit, isRed);
-				});
+				}).ToList(); // It's important to execute the query and return a list, otherwise the query will be executed everytime, and therefore creating new tiles.
 			}
 		}
 
 		// ex: 2m3m4m 2m3m4m 2m3m4m 5m5m
 		// ex: 234m 234m 234m 55m
-		public static IEnumerable<Group> GetGroups(string groupsString, bool isCompact = false) => groupsString.Split(' ').Select(s => new Group(s, isCompact));
+		public static IEnumerable<FullGroup> GetGroups(string groupsString, bool isCompact = false) => groupsString.Split(' ').Select(s => new FullGroup(s, isCompact));
 	}
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace JapaneseMahjong
 {
-	public struct Group : IEquatable<Group>, IFullGroup
+	public class FullGroup : IEquatable<FullGroup>, IFullGroup
 	{
 		public GroupType Type => Tiles.Distinct().Count() != 1
 				? GroupType.Sequence
@@ -16,11 +16,12 @@ namespace JapaneseMahjong
 					4 => GroupType.Quad,
 					_ => throw new Exception(),
 				});
-		public IEnumerable<Tile> Tiles { get; }
+		public IEnumerable<Tile> Tiles { get; protected set; }
+
 
 		// ex: 1m2m3m
 		// ex: 123m
-		public Group(string groupStr, bool isCompact = false)
+		public FullGroup(string groupStr, bool isCompact = false)
 		{
 			if (!isCompact) {
 				Tiles = TileFactory.GetTiles(groupStr);
@@ -30,7 +31,7 @@ namespace JapaneseMahjong
 				Tiles = values.Select(v => new Tile(v, suit));
 			}
 		}
-		public Group(IEnumerable<Tile> tiles)
+		public FullGroup(IEnumerable<Tile> tiles)
 		{
 			Tiles = tiles;
 		}
@@ -45,10 +46,10 @@ namespace JapaneseMahjong
 
 		public override bool Equals(object obj)
 		{
-			return obj is Group && Equals((Group)obj);
+			return obj is FullGroup && Equals((FullGroup)obj);
 		}
 
-		public bool Equals(Group other)
+		public bool Equals(FullGroup other)
 		{
 			return other != null &&
 				   Tiles.Except(other.Tiles).Count() == 0;
@@ -63,12 +64,12 @@ namespace JapaneseMahjong
 			return hash.ToHashCode();
 		}
 
-		public static bool operator ==(Group left, Group right)
+		public static bool operator ==(FullGroup left, FullGroup right)
 		{
-			return EqualityComparer<Group>.Default.Equals(left, right);
+			return EqualityComparer<FullGroup>.Default.Equals(left, right);
 		}
 
-		public static bool operator !=(Group left, Group right)
+		public static bool operator !=(FullGroup left, FullGroup right)
 		{
 			return !(left == right);
 		}

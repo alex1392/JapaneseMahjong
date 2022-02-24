@@ -1,4 +1,4 @@
-﻿using JapaneseMahjong.Controls;
+﻿using JapaneseMahjong;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
@@ -42,7 +42,11 @@ namespace JapaneseMahjong
 			if (!(sender is TileControl tileControl)) {
 				return;
 			}
-			Game.Players[0].DiscardTile?.TrySetResult((tileControl.Tile, false));
+			if (!(Game.Players[0] is HumanPlayer player)) {
+				return;
+			}
+
+			player.DecideDiscardTile?.TrySetResult(tileControl.Tile);
 		}
 
 		private void DiscardTileFromDraw(object sender, MouseButtonEventArgs e)
@@ -50,7 +54,10 @@ namespace JapaneseMahjong
 			if (!(sender is TileControl tileControl)) {
 				return;
 			}
-			Game.Players[0].DiscardTile?.TrySetResult((tileControl.Tile, true));
+			if (!(Game.Players[0] is HumanPlayer player)) {
+				return;
+			}
+			player.DecideDiscardTile?.TrySetResult(tileControl.Tile);
 		}
 	}
 }

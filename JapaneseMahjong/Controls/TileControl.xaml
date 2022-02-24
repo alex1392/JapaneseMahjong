@@ -1,16 +1,15 @@
-﻿<UserControl x:Class="JapaneseMahjong.Controls.TileControl"
+﻿<UserControl x:Class="JapaneseMahjong.TileControl"
 						 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-						 xmlns:local="clr-namespace:JapaneseMahjong.Controls"
+						 xmlns:local="clr-namespace:JapaneseMahjong"
 						 xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
 						 mc:Ignorable="d"
 						 d:DesignHeight="450"
 						 d:DesignWidth="800"
-						 d:DataContext="{d:DesignInstance Type=local:TileControl, IsDesignTimeCreatable=True}">
-	
-	<Grid x:Name="mainGrid">
+						 Name="userControl">
+	<Grid DataContext="{Binding ElementName=userControl}">
 		<Image Source="/Resources/Base.png" />
 		<Image Source="{Binding ImageSource}" Margin="5" />
 	</Grid>

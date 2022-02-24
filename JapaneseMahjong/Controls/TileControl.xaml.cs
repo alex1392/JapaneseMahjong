@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace JapaneseMahjong.Controls
+namespace JapaneseMahjong
 {
 	/// <summary>
 	/// Interaction logic for Tile.xaml
@@ -24,7 +24,6 @@ namespace JapaneseMahjong.Controls
 		public TileControl()
 		{
 			InitializeComponent();
-			mainGrid.DataContext = this;
 		}
 
 		public TileControl(Tile tile) : this()
