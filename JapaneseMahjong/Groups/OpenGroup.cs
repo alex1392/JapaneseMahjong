@@ -8,8 +8,8 @@ namespace JapaneseMahjong
 	public class OpenGroup : FullGroup
 	{
 		/// <summary>
-		/// index = -1 : obtain from the next player
-		/// index = +1/-3 : obtain from the previous player
+		/// index = +1 : obtain from the next player
+		/// index = -1/+3 : obtain from the previous player
 		/// index = +2/-2 : obtain from the opposite player
 		/// </summary>
 		public int ObtainIndex { get; }
@@ -20,9 +20,9 @@ namespace JapaneseMahjong
 			ObtainIndex = obtainIndex;
 		}
 
-		public void AddedQuad(Tile tile)
+		public void AddKan(Tile tile)
 		{
-			Debug.Assert(Type == GroupType.Triplet);
+			Debug.Assert(Type == FullGroupType.Triplet);
 			Debug.Assert(tile == Tiles.First());
 			Tiles = Tiles.Append(tile);
 		}

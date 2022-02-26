@@ -14,7 +14,8 @@ namespace JapaneseMahjong
 		public async Task<IGameState> UpdateAsync(Game game)
 		{
 			game.ActivePlayer.Discard(tile);
-			return await Task.Run(() => new DecideCallState());
+			//return await Task.Run(() => new DecideCallState());
+			return await Task.Run(() => new DrawTileState());
 		}
 	}
 }

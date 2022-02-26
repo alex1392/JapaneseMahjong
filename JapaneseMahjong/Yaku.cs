@@ -18,7 +18,7 @@ namespace JapaneseMahjong
 
 			void Decompose(IEnumerable<Tile> hand, IEnumerable<SemiGroup> readyGroups, IEnumerable<FullGroup> groups)
 			{
-				if (hand.Count() == 0) {
+				if (!hand.Any()) {
 					IEnumerable<Tile> tiles;
 					if (readyGroups.All(g => g.Type == SemiGroupType.Pair)) {
 						tiles = readyGroups.SelectMany(readyGroup => readyGroup.ReadyTiles);
@@ -30,7 +30,7 @@ namespace JapaneseMahjong
 				}
 
 				// check for one tile (single ready)
-				if (readyGroups.Count() == 0) {
+				if (!readyGroups.Any()) {
 					Decompose(hand.Skip(1), readyGroups.Append(new SemiGroup(hand.Take(1))), groups);
 				}
 
@@ -77,7 +77,7 @@ namespace JapaneseMahjong
 				void DecomposeReadyGroup(SemiGroup readyGroup)
 				{
 					if (readyGroup.Type != SemiGroupType.None &&
-						(readyGroups.Count() == 0 ||
+						(!readyGroups.Any() ||
 						readyGroups.First().Type == SemiGroupType.Pair ||
 						readyGroup.Type == SemiGroupType.Pair)) {
 						var handList = hand.ToList();
@@ -112,7 +112,7 @@ namespace JapaneseMahjong
 
 			void Decompose(IEnumerable<Tile> hand, IEnumerable<FullGroup> list)
 			{
-				if (hand.Count() == 0) {
+				if (!hand.Any()) {
 					results.Add(list);
 					return;
 				} 
@@ -157,7 +157,7 @@ namespace JapaneseMahjong
 
 		public static bool CheckDoubleSequences(IEnumerable<FullGroup> validHand)
 		{
-			var sequences = validHand.Where(g => g.Type == GroupType.Sequence);
+			var sequences = validHand.Where(g => g.Type == FullGroupType.Sequence);
 			var distinct = sequences.Distinct();
 			return distinct.Count() < sequences.Count();
 		}

@@ -20,9 +20,8 @@ namespace JapaneseMahjong
 			if (!isConfirm) {
 				return prevState;
 			}
-			// player in riichi state
-			// discard that tile
-			throw new NotImplementedException();
+			// TODO: player in riichi state
+			return new DiscardTileState(tile);
 		}
 	}
 }

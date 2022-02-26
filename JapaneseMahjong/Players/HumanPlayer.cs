@@ -21,6 +21,19 @@ namespace JapaneseMahjong
 		public TaskCompletionSource<Tile> DecideRiichiTile { get; private set; }
 		public TaskCompletionSource<bool> ConfirmRiichiTile { get; private set; }
 
+		#region Events
+		public event EventHandler<IEnumerable<SelfCallType>> ShowSelfCallOptions;
+		private void RaiseShowSelfCallOptions(IEnumerable<SelfCallType> options)
+		{
+			ShowSelfCallOptions?.Invoke(this, options);
+		}
+		public event EventHandler<IEnumerable<Tile>> ShowKanTileOptions;
+		private void RaiseShowTileOptions(IEnumerable<Tile> tiles)
+		{
+			ShowKanTileOptions?.Invoke(this, tiles);
+		}
+		#endregion
+
 		public override Task<CallType> DecideCallAsync()
 		{
 			throw new NotImplementedException();
@@ -32,16 +45,16 @@ namespace JapaneseMahjong
 			return await DecideDiscardTile.Task;
 		}
 
-		public override async Task<SelfCallType> DecideSelfCallAsync(ICollection<SelfCallType> options)
+		public override async Task<SelfCallType> DecideSelfCallAsync(IEnumerable<SelfCallType> options)
 		{
-			// TODO: push option list to the main window
+			RaiseShowSelfCallOptions(options);
 			DecideSelfCall = new TaskCompletionSource<SelfCallType>();
 			return await DecideSelfCall.Task;
 		}
 
-		public override async Task<Tile> DecideKanTileAsync(IEnumerable<Tile> list)
+		public override async Task<Tile> DecideKanTileAsync(IEnumerable<Tile> tiles)
 		{
-			// TODO: push options to the main window
+			RaiseShowTileOptions(tiles);
 			DecideKanTile = new TaskCompletionSource<Tile>();
 			return await DecideKanTile.Task;
 		}
@@ -60,13 +73,16 @@ namespace JapaneseMahjong
 			return await ConfirmRiichiTile.Task;
 		}
 	}
-
+	
 	public enum SelfCallType
 	{
-		None, Kan, Tsumo, Riichi
+		None, AddKan, CloseKan, Riichi, Tsumo
 	}
+	/// <summary>
+	/// Priority: Ron > Kan > Pon > Chi
+	/// </summary>
 	public enum CallType
 	{
-		None, Chi, Pon, Kan
+		None, Chi, Pon, Kan, Ron
 	}
 }

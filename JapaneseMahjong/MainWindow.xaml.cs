@@ -25,7 +25,16 @@ namespace JapaneseMahjong
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		public Game Game { get; private set; } = new Game();
+		public Game Game { get; private set; } = new GameStub();
+
+		public ObservableCollection<SelfCallType> SelfCallOptions { get; private set; } = new ObservableCollection<SelfCallType>();
+		public TaskCompletionSource<SelfCallType> DecideSelfCall { get; private set; }
+
+		public ObservableCollection<Tile> TileOptions { get; private set; } = new ObservableCollection<Tile>();
+
+		public HumanPlayer MainPlayer { get; private set; }
+		public TaskCompletionSource<Tile> DecideKanTile { get; private set; }
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -34,30 +43,69 @@ namespace JapaneseMahjong
 
 		private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
 		{
+			IdentifyMainPlayer();
+			Game.Deal();
 			await Game.RunAsync();
 		}
 
-		private void DiscardTileFromHand(object sender, MouseButtonEventArgs e)
+		private void IdentifyMainPlayer()
 		{
-			if (!(sender is TileControl tileControl)) {
+			if (!Game.Players.Any(p => p is HumanPlayer)) {
 				return;
 			}
-			if (!(Game.Players[0] is HumanPlayer player)) {
-				return;
-			}
-
-			player.DecideDiscardTile?.TrySetResult(tileControl.Tile);
+			MainPlayer = Game.Players.First(p => p is HumanPlayer) as HumanPlayer;
+			HumanPlayerEventsSubscription();
 		}
 
-		private void DiscardTileFromDraw(object sender, MouseButtonEventArgs e)
+		private void HumanPlayerEventsSubscription()
+		{
+			MainPlayer.ShowSelfCallOptions += async (_, options) =>
+			{
+				foreach (var option in options) {
+					SelfCallOptions.Add(option);
+				}
+				DecideSelfCall = new TaskCompletionSource<SelfCallType>();
+				var selfCall = await DecideSelfCall.Task;
+				MainPlayer?.DecideSelfCall?.TrySetResult(selfCall);
+			};
+			MainPlayer.ShowKanTileOptions += async (_, tiles) =>
+			{
+				foreach (var t in tiles) {
+					TileOptions.Add(t);
+				}
+				DecideKanTile = new TaskCompletionSource<Tile>();
+				var tile = await DecideKanTile.Task;
+				MainPlayer?.DecideKanTile?.TrySetResult(tile);
+			};
+		}
+
+		private void DiscardTile(object sender, MouseButtonEventArgs e)
 		{
 			if (!(sender is TileControl tileControl)) {
 				return;
 			}
-			if (!(Game.Players[0] is HumanPlayer player)) {
+
+			MainPlayer.DecideDiscardTile?.TrySetResult(tileControl.Tile);
+		}
+
+		private void SelectSelfCall(object sender, MouseButtonEventArgs e)
+		{
+			if (!(sender is Label label) ||
+				!(label.DataContext is SelfCallType selfCall)) {
 				return;
 			}
-			player.DecideDiscardTile?.TrySetResult(tileControl.Tile);
+			DecideSelfCall?.TrySetResult(selfCall);
+			SelfCallOptions.Clear();
+		}
+
+		private void SelectKanTile(object sender, MouseButtonEventArgs e)
+		{
+			if (!(sender is Label label) ||
+				!(label.DataContext is Tile tile)) {
+				return;
+			}
+			DecideKanTile?.TrySetResult(tile);
+			TileOptions.Clear();
 		}
 	}
 }

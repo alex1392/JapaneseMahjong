@@ -7,13 +7,13 @@ namespace JapaneseMahjong
 {
 	public class FullGroup : IEquatable<FullGroup>, IFullGroup
 	{
-		public GroupType Type => Tiles.Distinct().Count() != 1
-				? GroupType.Sequence
+		public FullGroupType Type => Tiles.Distinct().Count() != 1
+				? FullGroupType.Sequence
 				: ((Tiles.Count()) switch
 				{
-					2 => GroupType.Pair,
-					3 => GroupType.Triplet,
-					4 => GroupType.Quad,
+					2 => FullGroupType.Pair,
+					3 => FullGroupType.Triplet,
+					4 => FullGroupType.Quad,
 					_ => throw new Exception(),
 				});
 		public IEnumerable<Tile> Tiles { get; protected set; }
@@ -52,7 +52,7 @@ namespace JapaneseMahjong
 		public bool Equals(FullGroup other)
 		{
 			return other != null &&
-				   Tiles.Except(other.Tiles).Count() == 0;
+				   !Tiles.Except(other.Tiles).Any();
 		}
 
 		public override int GetHashCode()
@@ -76,7 +76,7 @@ namespace JapaneseMahjong
 		#endregion
 	}
 
-	public enum GroupType
+	public enum FullGroupType
 	{
 		Pair,
 		Sequence,

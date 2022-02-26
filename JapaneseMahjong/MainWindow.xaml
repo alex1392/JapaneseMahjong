@@ -25,48 +25,96 @@
 															Margin="2" />
 			</DataTemplate>
 		</DockPanel.Resources>
-		<!--<TileSet Margin="0,0,0,65" />-->
-		<StackPanel DockPanel.Dock="Bottom"
-								Orientation="Horizontal">
-			<ItemsControl Height="60"
-										ItemsSource="{Binding Source={StaticResource MainHandViewSourece}}"
+
+		<Expander Header="Wall"
+							DockPanel.Dock="Top">
+			<ItemsControl ItemsSource="{Binding Game.Wall}"
 										ItemTemplate="{StaticResource TileTemplate}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
-						<StackPanel Orientation="Horizontal" />
+						<WrapPanel Orientation="Horizontal"
+											 ItemHeight="50" />
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
-				<ItemsControl.Resources>
-					<Style TargetType="local:TileControl">
-						<EventSetter Event="MouseDoubleClick"
-												 Handler="DiscardTileFromHand" />
-					</Style>
-				</ItemsControl.Resources>
 			</ItemsControl>
-			<local:TileControl Tile="{Binding Game.Players[0].DrawedTile}"
-														Height="60"
-														Margin="20,0"
-														MouseDoubleClick="DiscardTileFromDraw"/>
-		</StackPanel>
+		</Expander>
+
+		<GroupBox Header="Hand"
+							DockPanel.Dock="Bottom">
+			<StackPanel DockPanel.Dock="Bottom"
+									Orientation="Horizontal">
+				<ItemsControl Height="60"
+											ItemsSource="{Binding Source={StaticResource MainHandViewSourece}}"
+											ItemTemplate="{StaticResource TileTemplate}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.Resources>
+						<Style TargetType="local:TileControl">
+							<EventSetter Event="MouseDoubleClick"
+													 Handler="DiscardTile" />
+						</Style>
+					</ItemsControl.Resources>
+				</ItemsControl>
+				<local:TileControl Tile="{Binding Game.Players[0].DrawedTile}"
+													 Height="60"
+													 Margin="20,0"
+													 MouseDoubleClick="DiscardTile" />
+			</StackPanel>
+		</GroupBox>
+
+		<GroupBox Header="Sea"
+							DockPanel.Dock="Top">
+			<ItemsControl DockPanel.Dock="Top"
+										ItemsSource="{Binding Game.Players[0].River}"
+										ItemTemplate="{StaticResource TileTemplate}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<WrapPanel Orientation="Horizontal"
+											 ItemHeight="50" />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+			</ItemsControl>
+		</GroupBox>
+
+		<GroupBox Header="Option Panel"
+							DockPanel.Dock="Bottom"
+							VerticalAlignment="Bottom">
+			<StackPanel Orientation="Vertical">
+				<ItemsControl ItemsSource="{Binding SelfCallOptions}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate DataType="{x:Type local:SelfCallType}">
+							<Label Content="{Binding }"
+										 MouseDoubleClick="SelectSelfCall"/>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+				<ItemsControl ItemsSource="{Binding TileOptions}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate DataType="{x:Type local:Tile}">
+							<Label Content="{Binding }"
+										 MouseDoubleClick="SelectKanTile" />
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+			</StackPanel>
+
+		</GroupBox>
 		
-		<ItemsControl DockPanel.Dock="Bottom" 
-									ItemsSource="{Binding Game.Players[0].River}"
-									ItemTemplate="{StaticResource TileTemplate}">
-			<ItemsControl.ItemsPanel>
-				<ItemsPanelTemplate>
-					<WrapPanel Orientation="Horizontal"
-										 ItemHeight="50" />
-				</ItemsPanelTemplate>
-			</ItemsControl.ItemsPanel>
-		</ItemsControl>
-		<ItemsControl ItemsSource="{Binding Game.Wall}"
-									ItemTemplate="{StaticResource TileTemplate}">
-			<ItemsControl.ItemsPanel>
-				<ItemsPanelTemplate>
-					<WrapPanel Orientation="Horizontal"
-										 ItemHeight="50" />
-				</ItemsPanelTemplate>
-			</ItemsControl.ItemsPanel>
-		</ItemsControl>
+		
 	</DockPanel>
 </Window>

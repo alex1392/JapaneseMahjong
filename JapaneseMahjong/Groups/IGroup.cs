@@ -9,6 +9,6 @@ namespace JapaneseMahjong
 
 	public interface IFullGroup : IGroup
 	{
-		GroupType Type { get; }
+		FullGroupType Type { get; }
 	}
 }
